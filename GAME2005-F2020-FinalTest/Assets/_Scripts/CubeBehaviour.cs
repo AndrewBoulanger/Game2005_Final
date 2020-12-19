@@ -63,7 +63,7 @@ public class CubeBehaviour : MonoBehaviour
     private MeshFilter meshFilter;
     public Bounds bounds;
     public bool isGrounded;
-
+    public bool isStatic;
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +73,9 @@ public class CubeBehaviour : MonoBehaviour
 
         bounds = meshFilter.mesh.bounds;
         size = bounds.size;
+
+        isStatic = false;
+        isStatic = (GetComponent<RigidBody3D>().bodyType == 0); // 0 is static
 
     }
 

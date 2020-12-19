@@ -8,6 +8,7 @@ public class CollisionManager : MonoBehaviour
 {
     public CubeBehaviour[] cubes;
     public BulletBehaviour[] spheres;
+    public PlayerBehaviour player;
 
     private static Vector3[] faces;
 
@@ -15,6 +16,7 @@ public class CollisionManager : MonoBehaviour
     void Start()
     {
         cubes = FindObjectsOfType<CubeBehaviour>();
+        player = FindObjectOfType<PlayerBehaviour>();
 
         faces = new Vector3[]
         {
@@ -32,6 +34,7 @@ public class CollisionManager : MonoBehaviour
         // check each AABB with every other AABB in the scene
         for (int i = 0; i < cubes.Length; i++)
         {
+            //cube and cube
             for (int j = 0; j < cubes.Length; j++)
             {
                 if (i != j)
@@ -39,6 +42,9 @@ public class CollisionManager : MonoBehaviour
                     CheckAABBs(cubes[i], cubes[j]);
                 }
             }
+
+            //cube and player
+          //  CheckAABBs(player.cube, cubes[i]);
         }
 
         // Check each sphere against each AABB in the scene
@@ -178,12 +184,16 @@ public class CollisionManager : MonoBehaviour
                     a.gameObject.GetComponent<RigidBody3D>().Stop();
                     a.isGrounded = true;
                 }
-                
-
+              
                 // add the new contact
                 a.contacts.Add(contactB);
                 a.isColliding = true;
                 
+            //let the player push the block
+            if(b.name == "Player" && !a.isStatic)
+            {
+                    a.transform.position += -penetration * face ;
+            }
             }
         }
         else
@@ -194,7 +204,7 @@ public class CollisionManager : MonoBehaviour
                 a.contacts.Remove(a.contacts.Find(x => x.cube.gameObject.name.Equals(b.gameObject.name)));
                 a.isColliding = false;
 
-                if (a.gameObject.GetComponent<RigidBody3D>().bodyType == BodyType.DYNAMIC)
+                if (a.gameObject.GetComponent<RigidBody3D>().bodyType == BodyType.DYNAMIC )
                 {
                     a.gameObject.GetComponent<RigidBody3D>().isFalling = true;
                     a.isGrounded = false;
@@ -205,37 +215,3 @@ public class CollisionManager : MonoBehaviour
 }
 
 
-//// get box closest point to sphere center by clamping
-//var x = Mathf.Max(b.min.x, Mathf.Min(s.transform.position.x, b.max.x));
-//var y = Mathf.Max(b.min.y, Mathf.Min(s.transform.position.y, b.max.y));
-//var z = Mathf.Max(b.min.z, Mathf.Min(s.transform.position.z, b.max.z));
-
-//var distance = Math.Sqrt((x - s.transform.position.x) * (x - s.transform.position.x) +
-//                         (y - s.transform.position.y) * (y - s.transform.position.y) +
-//                         (z - s.transform.position.z) * (z - s.transform.position.z));
-
-//if ((distance < s.radius) && (!s.isColliding))
-//{
-//    // determine the distances between the contact extents
-//    float[] distances = {
-//                (b.max.x - s.transform.position.x),
-//                (s.transform.position.x - b.min.x),
-//                (b.max.y - s.transform.position.y),
-//                (s.transform.position.y - b.min.y),
-//                (b.max.z - s.transform.position.z),
-//                (s.transform.position.z - b.min.z)
-//            };
-
-//    float penetration = float.MaxValue;
-//    Vector3 face = Vector3.zero;
-
-//    // check each face to see if it is the one that connected
-//    for (int i = 0; i < 6; i++)
-//    {
-//        if (distances[i] < penetration)
-//        {
-//            // determine the penetration distance
-//            penetration = distances[i];
-//            face = faces[i];
-//        }
-//    }

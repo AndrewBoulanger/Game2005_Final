@@ -10,13 +10,12 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject bullet;
     public int fireRate;
 
-
     public BulletManager bulletManager;
 
     [Header("Movement")]
     public float speed;
     public bool isGrounded;
-
+    public Vector3 direction;
 
     public RigidBody3D body;
     public CubeBehaviour cube;
@@ -56,7 +55,7 @@ public class PlayerBehaviour : MonoBehaviour
                 body.velocity = playerCam.transform.forward * speed * Time.deltaTime;
             }
 
-            if (Input.GetAxisRaw("Vertical") < 0.0f) 
+            if (Input.GetAxisRaw("Vertical") < 0.0f)
             {
                 // move Back
                 body.velocity = -playerCam.transform.forward * speed * Time.deltaTime;
@@ -64,20 +63,50 @@ public class PlayerBehaviour : MonoBehaviour
 
             body.velocity = Vector3.Lerp(body.velocity, Vector3.zero, 0.9f);
             body.velocity = new Vector3(body.velocity.x, 0.0f, body.velocity.z); // remove y
-            
+
 
             if (Input.GetAxisRaw("Jump") > 0.0f)
             {
-                body.velocity = transform.up * speed * 0.1f * Time.deltaTime;
+                body.velocity += transform.up * speed * 0.05f * Time.deltaTime;
+            }
+        }
+        if (!isGrounded)
+        {
+            direction = body.velocity;
+            if (Input.GetAxisRaw("Horizontal") > 0.0f)
+            {
+                // move right
+                direction += playerCam.transform.right * speed *0.05f * Time.deltaTime;
+            }
+            if (Input.GetAxisRaw("Horizontal") < 0.0f)
+            {
+                // move left
+                direction += -playerCam.transform.right * speed * 0.05f * Time.deltaTime;
+            }
+            if (Input.GetAxisRaw("Vertical") > 0.0f)
+            {
+                // move forward
+                direction += playerCam.transform.forward * speed * 0.05f * Time.deltaTime;
             }
 
-            if (Input.GetAxisRaw("Quit") > 0.0f)
+            if (Input.GetAxisRaw("Vertical") < 0.0f)
+            {
+                // move Back
+                direction += -playerCam.transform.forward * speed * 0.05f * Time.deltaTime;
+            }
+
+            direction = Vector3.Lerp(direction, body.velocity, 0.99f);
+            body.velocity = direction;
+        }
+
+
+        transform.position += body.velocity;
+        
+
+        if (Input.GetAxisRaw("Quit") > 0.0f)
             {
                 SceneManager.LoadScene(0);
             }
-
-            transform.position += body.velocity;
-        }
     }
 
 

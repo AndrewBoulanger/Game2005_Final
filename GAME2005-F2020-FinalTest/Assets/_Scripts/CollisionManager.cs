@@ -56,11 +56,9 @@ public class CollisionManager : MonoBehaviour
                 {
                     CheckBulletAABB(sphere, cube);
                 }
-                
+
             }
         }
-
-
     }
 
     public static void CheckBulletAABB(BulletBehaviour a, CubeBehaviour b)
@@ -194,10 +192,12 @@ public class CollisionManager : MonoBehaviour
                 a.isColliding = true;
                 
                 //let the player push the block
-                if(b.name == "Player" && !a.isStatic)
+                if(!a.isStatic && contactB.face != Vector3.up)
                 {
-                     a.transform.position += -penetration * face ;
+                    a.transform.position += -penetration * face;
+                   //  a.gameObject.GetComponent<RigidBody3D>().velocity += b.gameObject.GetComponent<RigidBody3D>().velocity;
                 }
+
             
             }
            

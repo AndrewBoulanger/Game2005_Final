@@ -30,7 +30,7 @@ public class BulletBehaviour : MonoBehaviour
         bulletManager = FindObjectOfType<BulletManager>();
 
         bounds =GetComponent<MeshFilter>().mesh.bounds;
-        bounds.extents *= 0.2f;
+        bounds.extents = transform.localScale*0.5f;
         size = bounds.size;
 
     }

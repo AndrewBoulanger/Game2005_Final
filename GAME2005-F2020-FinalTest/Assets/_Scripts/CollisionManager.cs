@@ -194,6 +194,11 @@ public class CollisionManager : MonoBehaviour
             {
                     a.transform.position += -penetration * face ;
             }
+            //and dont let the player walk through static blocks
+            if(a.name == "Player" && b.isStatic)
+                {
+                    a.transform.position += -penetration * face;
+                }
             }
         }
         else

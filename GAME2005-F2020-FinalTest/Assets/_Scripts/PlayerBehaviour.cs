@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
@@ -68,6 +69,11 @@ public class PlayerBehaviour : MonoBehaviour
             if (Input.GetAxisRaw("Jump") > 0.0f)
             {
                 body.velocity = transform.up * speed * 0.1f * Time.deltaTime;
+            }
+
+            if (Input.GetAxisRaw("Quit") > 0.0f)
+            {
+                SceneManager.LoadScene(0);
             }
 
             transform.position += body.velocity;

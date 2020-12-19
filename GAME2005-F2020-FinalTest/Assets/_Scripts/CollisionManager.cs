@@ -184,27 +184,28 @@ public class CollisionManager : MonoBehaviour
                     a.gameObject.GetComponent<RigidBody3D>().Stop();
                     a.isGrounded = true;
                 }
+                else if(b.isStatic) //dont let the player or cube pass through
+                {
+                    a.transform.position += -penetration * face;
+                }
               
                 // add the new contact
                 a.contacts.Add(contactB);
                 a.isColliding = true;
                 
-            //let the player push the block
-            if(b.name == "Player" && !a.isStatic)
-            {
-                    a.transform.position += -penetration * face ;
-            }
-            //and dont let the player walk through static blocks
-            if(a.name == "Player" && b.isStatic)
+                //let the player push the block
+                if(b.name == "Player" && !a.isStatic)
                 {
-                    a.transform.position += -penetration * face;
+                     a.transform.position += -penetration * face ;
                 }
+            
             }
+           
         }
         else
         {
 
-            if (a.contacts.Exists(x => x.cube.gameObject.name == b.gameObject.name))
+            if (a.contacts.Exists(x => x.cube.gameObject.name == b.gameObject.name) && a.contacts.Count > 0)
             {
                 a.contacts.Remove(a.contacts.Find(x => x.cube.gameObject.name.Equals(b.gameObject.name)));
                 a.isColliding = false;

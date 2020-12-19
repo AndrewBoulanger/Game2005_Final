@@ -70,7 +70,7 @@ public class PlayerBehaviour : MonoBehaviour
                 body.velocity += transform.up * speed * 0.05f * Time.deltaTime;
             }
         }
-        if (!isGrounded)
+        if (!isGrounded)  //allow direction changing in air
         {
             direction = body.velocity;
             if (Input.GetAxisRaw("Horizontal") > 0.0f)
@@ -94,7 +94,6 @@ public class PlayerBehaviour : MonoBehaviour
                 // move Back
                 direction += -playerCam.transform.forward * speed * 0.05f * Time.deltaTime;
             }
-
             direction = Vector3.Lerp(direction, body.velocity, 0.99f);
             body.velocity = direction;
         }
@@ -107,6 +106,11 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 SceneManager.LoadScene(0);
             }
+
+        if (Input.GetAxisRaw("Cancel") > 0.0f)
+        {
+            Debug.Break();
+        }
     }
 
 

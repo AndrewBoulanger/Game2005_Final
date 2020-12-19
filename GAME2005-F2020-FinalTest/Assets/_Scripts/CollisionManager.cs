@@ -7,7 +7,7 @@ using UnityEngine;
 public class CollisionManager : MonoBehaviour
 {
     public CubeBehaviour[] cubes;
-    public BulletBehaviour[] bullets;
+    public BulletBehaviour[] spheres;
 
     private static Vector3[] faces;
 
@@ -27,7 +27,7 @@ public class CollisionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bullets = FindObjectsOfType<BulletBehaviour>();
+        spheres = FindObjectsOfType<BulletBehaviour>();
 
         // check each AABB with every other AABB in the scene
         for (int i = 0; i < cubes.Length; i++)
@@ -41,14 +41,14 @@ public class CollisionManager : MonoBehaviour
             }
         }
 
-        // Check each bullet against each AABB in the scene
-        foreach (var bullet in bullets)
+        // Check each sphere against each AABB in the scene
+        foreach (var sphere in spheres)
         {
             foreach (var cube in cubes)
             {
                 if (cube.name != "Player")
                 {
-                    CheckBulletAABB(bullet, cube);
+                    CheckBulletAABB(sphere, cube);
                 }
                 
             }
@@ -59,10 +59,11 @@ public class CollisionManager : MonoBehaviour
 
     public static void CheckBulletAABB(BulletBehaviour a, CubeBehaviour b)
     {
-        if ((a.min.x <= b.max.x && a.max.x >= b.min.x) &&
-             (a.min.y <= b.max.y && a.max.y >= b.min.y) &&
-             (a.min.z <= b.max.z && a.max.z >= b.min.z)  && !a.isColliding)
+        if ((a.min.x < b.max.x && a.max.x > b.min.x) &&
+            (a.min.y < b.max.y && a.max.y > b.min.y) &&
+            (a.min.z < b.max.z && a.max.z > b.min.z) && a.isColliding == false)
         {
+            a.contacts.Add(b);
             // determine the distances between the contact extents
             float[] distances = {
                 (b.max.x - a.min.x),
@@ -87,12 +88,20 @@ public class CollisionManager : MonoBehaviour
                 }
             }
 
+            //move out
+            a.transform.position += -penetration * face;
+
             a.penetration = penetration;
             a.collisionNormal = face;
-            //s.isColliding = true;
+            a.isColliding = true;
 
-            
+
             Reflect(a);
+        }
+        else if(a.contacts.Contains(b))
+        {
+            a.isColliding = false;
+            a.contacts.Remove(b);
         }
 
     }
@@ -194,3 +203,39 @@ public class CollisionManager : MonoBehaviour
         }
     }
 }
+
+
+//// get box closest point to sphere center by clamping
+//var x = Mathf.Max(b.min.x, Mathf.Min(s.transform.position.x, b.max.x));
+//var y = Mathf.Max(b.min.y, Mathf.Min(s.transform.position.y, b.max.y));
+//var z = Mathf.Max(b.min.z, Mathf.Min(s.transform.position.z, b.max.z));
+
+//var distance = Math.Sqrt((x - s.transform.position.x) * (x - s.transform.position.x) +
+//                         (y - s.transform.position.y) * (y - s.transform.position.y) +
+//                         (z - s.transform.position.z) * (z - s.transform.position.z));
+
+//if ((distance < s.radius) && (!s.isColliding))
+//{
+//    // determine the distances between the contact extents
+//    float[] distances = {
+//                (b.max.x - s.transform.position.x),
+//                (s.transform.position.x - b.min.x),
+//                (b.max.y - s.transform.position.y),
+//                (s.transform.position.y - b.min.y),
+//                (b.max.z - s.transform.position.z),
+//                (s.transform.position.z - b.min.z)
+//            };
+
+//    float penetration = float.MaxValue;
+//    Vector3 face = Vector3.zero;
+
+//    // check each face to see if it is the one that connected
+//    for (int i = 0; i < 6; i++)
+//    {
+//        if (distances[i] < penetration)
+//        {
+//            // determine the penetration distance
+//            penetration = distances[i];
+//            face = faces[i];
+//        }
+//    }

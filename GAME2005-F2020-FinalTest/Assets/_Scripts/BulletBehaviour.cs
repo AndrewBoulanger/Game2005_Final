@@ -18,6 +18,7 @@ public class BulletBehaviour : MonoBehaviour
     public Vector3 size;
     public Vector3 max;
     public Vector3 min;
+    public List<CubeBehaviour> contacts;
 
     public BulletManager bulletManager;
 
@@ -28,7 +29,8 @@ public class BulletBehaviour : MonoBehaviour
         radius = Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z) * 0.5f;
         bulletManager = FindObjectOfType<BulletManager>();
 
-        bounds = GetComponent<MeshFilter>().mesh.bounds;
+        bounds =GetComponent<MeshFilter>().mesh.bounds;
+        bounds.extents *= 0.2f;
         size = bounds.size;
 
     }
@@ -36,8 +38,8 @@ public class BulletBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        max = Vector3.Scale(bounds.max, transform.localScale) + transform.position;
-        min = Vector3.Scale(bounds.min, transform.localScale) + transform.position;
+        max = bounds.max + transform.position;
+        min = bounds.min+ transform.position;
         _Move();
         _CheckBounds();
     }
